@@ -2,10 +2,14 @@
 using namespace std;
 
 string Saying;
-string subjects[] = { "человек", "бог", "философия"};
-int subjectsCount = 3;
+string subjects[] = { "человек", "бог", "всевышний", "философ"};
+int subjectsCount = 4;
+string abstractsubjects[] = { "бытие", "космос", "религия", "философия", "материя", "сознание", "вселенная", "добро", "карма", "хаос"};
+int abstractsubjectsCount = 10;
 string actions[] = { "существует", "мыслит", "думает", "есть"};
-int actionsCount = 3;
+int actionsCount = 4;
+string abstractactions[] = { "существует", "есть", "везде", "нигде"};
+int abstractactionsCount = 4;
 string thinkAbout[] = { "о вечном", "о свободе", "о себе", "о смысле бытия", "о смерти", "о жизни"};
 int thinkAboutCount = 6;
 
@@ -17,52 +21,68 @@ int rnd(int x, int y) {
     return (rnd1(y - x) + x);
 }
 
-void ActionStop() {
+void ActionStop(int ab) {
     int Not = rnd1(3);
     if (!Not) Saying += " не";
-    int phr = rnd(0, actionsCount);
-    Saying += " " + actions[phr];
-    if ((phr == 1) || (phr == 2)) {
-        if (!rnd1(6)) Saying += " " + thinkAbout[rnd(0, thinkAboutCount)];
+    if (!ab) {
+        int phr = rnd(0, actionsCount);
+        Saying += " " + actions[phr];
+        if ((phr == 1) || (phr == 2)) {
+            if (!rnd1(6)) Saying += " " + thinkAbout[rnd(0, thinkAboutCount)];
+        }
+    } else {
+        int phr = rnd(0, abstractactionsCount);
+        Saying += " " + abstractactions[phr];
     }
 }
 
-void ObjectStop() {
-    Saying += " " + subjects[rnd(0, subjectsCount)];
+int ObjectStop() {
+    int ab = rnd1(4);
+    if (!ab) {
+        Saying += " " + subjects[rnd(0, subjectsCount)];
+    }
+    else {
+        Saying += " " + abstractsubjects[rnd(0, abstractsubjectsCount)];
+    }
+    return ab;
 }
 
-void When() {
+void When(int ab) {
     if (!rnd1(5)) Saying += ", когда"; 
     else Saying += " только когда";
     int SecondSubject = rnd(1, 3);
     switch (SecondSubject)
     {
     case 1:
-        ActionStop();
+        ActionStop(ab);
         break;
     case 2:
-        ObjectStop();
-        ActionStop();
+        ActionStop(ObjectStop());
         break;
     default:
         break;
     }
 }
 
-void And() {
+void And(int ab) {
     if (!rnd1(3)) { 
-        Saying += ", а";
-        ObjectStop();
-        ActionStop();
+        if (!rnd1(5)) {
+            Saying += ", но";
+            ActionStop(ObjectStop());
+        }
+        else {
+            Saying += ", а";
+            ActionStop(ObjectStop());
+        }
     }
     else { 
         Saying += " и";
-        ActionStop();
+        ActionStop(ab);
     }
 }
 
 
-void If() {
+void If(int ab) {
     int IfForm = rnd(1, 5);
     switch (IfForm)
     {
@@ -85,18 +105,52 @@ void If() {
     switch (SecondSubject)
     {
     case 1:
-        ActionStop();
+        ActionStop(ab);
         break;
     case 2:
-        ObjectStop();
-        ActionStop();
+        ActionStop(ObjectStop());
         break;
     default:
         break;
     }
 }
 
-void Action() {
+void Because(int ab) {
+    int IfForm = rnd(1, 5);
+    switch (IfForm)
+    {
+    case 1:
+        Saying += ", потому что";
+        break;
+    case 2:
+        Saying += " из-за того, что";
+        break;
+    case 3:
+        Saying += " только потому, что";
+        break;
+    case 4:
+        Saying += ", ведь";
+        break;
+    default:
+        break;
+    }
+    int SecondSubject = rnd(2, 3);
+    switch (SecondSubject)
+    {
+    case 1:
+        ActionStop(ab);
+        break;
+    case 2:
+        ActionStop(ObjectStop());
+        break;
+    default:
+        break;
+    }
+}
+
+
+
+void Action(int ab) {
     /*int Not = rnd1(3);
     if (!Not) Saying += " не";
     int phr = rnd(0, actionsCount);
@@ -104,18 +158,21 @@ void Action() {
     if ((phr == 1) || (phr == 2)) {
         if (!rnd1(6)) Saying += " " + thinkAbout[rnd(0, thinkAboutCount)];
     }*/
-    ActionStop();
-    int AfterAction = rnd(1, 4);
+    ActionStop(ab);
+    int AfterAction = rnd(1, 6);
     switch (AfterAction)
     {
     case 1:
-        When();
+        When(ab);
         break;
     case 2:
-        If();
+        If(ab);
         break;
     case 3:
-        And();
+        And(ab);
+        break;
+    case 4:
+        Because(ab);
         break;
     default:
         break;
@@ -124,12 +181,18 @@ void Action() {
 
 
 void Subject() {
-    Saying += " " + subjects[rnd(0, subjectsCount)];
+    int ab = rnd1(4);
+    if (!ab) {
+        Saying += " " + subjects[rnd(0, subjectsCount)];
+    }
+    else {
+        Saying += " " + abstractsubjects[rnd(0, abstractsubjectsCount)];
+    }
     int ActionType = rnd(1, 2);
     switch (ActionType)
     {
     case 1:
-        Action();
+        Action(ab);
         break;
     default:
         break;
