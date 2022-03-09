@@ -2,16 +2,19 @@
 using namespace std;
 
 string Saying;
+string LastWord;
 string subjects[] = { "человек", "бог", "всевышний", "философ"};
 int subjectsCount = 4;
 string abstractsubjects[] = { "бытие", "космос", "религия", "философия", "материя", "сознание", "вселенная", "добро", "карма", "хаос"};
 int abstractsubjectsCount = 10;
-string actions[] = { "существует", "мыслит", "думает", "есть"};
-int actionsCount = 4;
+string actions[] = { "существует", "мыслит", "думает", "есть", "бесполезен"};
+int actionsCount = 5;
 string abstractactions[] = { "существует", "есть", "везде", "нигде"};
 int abstractactionsCount = 4;
 string thinkAbout[] = { "о вечном", "о свободе", "о себе", "о смысле бытия", "о смерти", "о жизни"};
 int thinkAboutCount = 6;
+string liveIn[] = { "в мире", "во вселенной", "в пространстве"};
+int liveInCount = 3;
 
 int rnd1(int x) {
     return rand() % x;
@@ -28,7 +31,10 @@ void ActionStop(int ab) {
         int phr = rnd(0, actionsCount);
         Saying += " " + actions[phr];
         if ((phr == 1) || (phr == 2)) {
-            if (!rnd1(6)) Saying += " " + thinkAbout[rnd(0, thinkAboutCount)];
+            if (!rnd1(5)) Saying += " " + thinkAbout[rnd(0, thinkAboutCount)];
+        }
+        if (phr == 0) {
+            if (!rnd1(7)) Saying += " " + liveIn[rnd(0, liveInCount)];
         }
     } else {
         int phr = rnd(0, abstractactionsCount);
@@ -39,10 +45,14 @@ void ActionStop(int ab) {
 int ObjectStop() {
     int ab = rnd1(4);
     if (!ab) {
-        Saying += " " + subjects[rnd(0, subjectsCount)];
+        int y = rnd(0, subjectsCount);
+        Saying += " " + subjects[y];
+        LastWord = subjects[y];
     }
     else {
-        Saying += " " + abstractsubjects[rnd(0, abstractsubjectsCount)];
+        int z = rnd(0, abstractsubjectsCount);
+        Saying += " " + abstractsubjects[z];
+        LastWord = abstractsubjects[z];
     }
     return ab;
 }
@@ -199,12 +209,88 @@ void Subject() {
     }
 }
 
+void IfThen() {
+    Saying += " если";
+    ActionStop(ObjectStop());
+    Saying += ", то";
+    ActionStop(ObjectStop());
+    if (rnd1(4)) return;
+    int AndForm = rnd(1, 5);
+    switch (AndForm)
+    {
+    case 1:
+        Saying += " и";
+        ActionStop(ObjectStop());
+        break;
+    case 2:
+        Saying += ", а";
+        ActionStop(ObjectStop());
+        break;
+    case 3:
+        Saying += ", но если";
+        ActionStop(ObjectStop());
+        Saying += ", то";
+        ActionStop(ObjectStop());
+        break;
+    case 4:
+        Saying += ", ведь";
+        ActionStop(ObjectStop());
+        break;
+    default:
+        break;
+    }
+}
+
+void ItIs() {
+    ObjectStop();
+    Saying += " — это";
+    ObjectStop();
+    if (rnd1(3)) return;
+    int AndForm = rnd(1, 5);
+    switch (AndForm)
+    {
+    case 1:
+        Saying += " или";
+        ObjectStop();
+        break;
+    case 2:
+        Saying += " и";
+        ObjectStop();
+        break;
+    case 3:
+        Saying += ", котор";
+        if (LastWord[LastWord.length() - 1] == 'а')
+            Saying += "ая";
+        else if ((LastWord[LastWord.length() - 1] == 'е') ||
+            LastWord[LastWord.length() - 1] == 'о')
+            Saying += "ое";
+        else Saying += "ый";
+        if (rnd1(3)) Saying += " не";
+        Saying += " есть";
+        ObjectStop();
+        break;
+    case 4:
+        Saying += ", ведь";
+        ActionStop(ObjectStop());
+        break;
+    default:
+        break;
+    }
+}
+
+
 void Start() {
-    int QuestionType = rnd(1, 2);
+    int QuestionType = rnd(1, 4);
     switch (QuestionType)
     {
     case 1:
         Subject();
+        break;
+    case 2:
+        IfThen();
+        break;
+    case 3:
+        ItIs();
         break;
     default:
         break;
