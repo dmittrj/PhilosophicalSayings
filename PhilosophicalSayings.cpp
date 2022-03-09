@@ -259,10 +259,11 @@ void ItIs() {
         break;
     case 3:
         Saying += ", котор";
-        if (LastWord[LastWord.length() - 1] == 'а')
+        if ((LastWord[LastWord.length() - 1] == 'а') ||
+            (LastWord[LastWord.length() - 1] == 'я'))
             Saying += "ая";
         else if ((LastWord[LastWord.length() - 1] == 'е') ||
-            LastWord[LastWord.length() - 1] == 'о')
+                  LastWord[LastWord.length() - 1] == 'о')
             Saying += "ое";
         else Saying += "ый";
         if (rnd1(3)) Saying += " не";
